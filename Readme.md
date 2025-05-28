@@ -5,5 +5,6 @@
 CREATE DATABASE store;
 CREATE USER store_user WITH PASSWORD 'passw0rd';
 GRANT ALL privileges ON DATABASE store TO store_user;
+ALTER DATABASE store OWNER TO store_user;
 ```
 
