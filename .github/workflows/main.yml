@@ -11,9 +11,9 @@ jobs:
       uses: actions/checkout@v2
 
     #### Добавьте шаг с Flyway-миграциями
-    # https://github.com/marketplace/actions/flyway-migration
+    # https://github.com/red-gate/setup-flyway
     - name: шаг с Flyway-миграциями
-      uses: joshuaavalon/flyway-action@v3.0.0
+      uses: red-gate/setup-flyway@v1
       with:
         url: jdbc:postgresql://${{ secrets.DB_HOST }}:${{ secrets.DB_PORT }}/${{ secrets.DB_NAME }}
         locations: filesystem:migrations
