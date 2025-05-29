@@ -24,7 +24,7 @@ jobs:
         FLYWAY_URL: "jdbc:postgresql://${{ secrets.DB_HOST }}:${{ secrets.DB_PORT }}/${{ secrets.DB_NAME }}"
         FLYWAY_USER: ${{ secrets.DB_USER }}
         FLYWAY_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      run: flyway migrate -locations=filesystem:sql/migrations
+      run: flyway migrate -locations=filesystem:migrations
       
     # https://github.com/marketplace/actions/flyway-migration
 #      uses: joshuaavalon/flyway-action@v3.0.0
