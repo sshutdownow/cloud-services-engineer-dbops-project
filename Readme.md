@@ -11,8 +11,8 @@ ALTER DATABASE store OWNER TO store_user;
 ### [GitHUB secrets](https://docs.github.com/ru/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions)
 Создаём и задаём значения для: DB_HOST, DB_PORT, DB_NAME, DB_USER и DB_PASSWORD.
 
-### Workflow GitHUB Actions
-Добавляем в файл _.github/workflows/main.yml_:
+### [GitHUB Workflow](https://docs.github.com/ru/actions/writing-workflows/about-workflows)
+Добавляем в файл **[.github/workflows/main.yml](.github/workflows/main.yml)** шаг с Flyway-миграциями:
 ```yaml
     #### Добавьте шаг с Flyway-миграциями
     # Устанавливаем JDK, который нужен для запуска приложений, написанных на Java (Flyway)
@@ -41,13 +41,13 @@ ALTER DATABASE store OWNER TO store_user;
         FLYWAY_PASSWORD: ${{ secrets.DB_PASSWORD }}
       run: flyway migrate -locations=filesystem:migrations
 ```
-Далее все изменения ([DDL](https://ru.wikipedia.org/wiki/Data_Definition_Language)) БД выполняются в рамках миграций через механизм [GitHUB actions](https://docs.github.com/en/actions/about-github-actions/understanding-github-actions).
+Далее все изменения ([DDL](https://ru.wikipedia.org/wiki/Data_Definition_Language) и первичное заполнение) БД выполняются в рамках миграций, сами миграции запускаются через механизм [GitHUB actions](https://docs.github.com/en/actions/about-github-actions/understanding-github-actions).
 
 #### Описание миграций:
    * [V001__create_tables.sql](migrations/V001__create_tables.sql) создаёт в тестовой БД исходные таблицы идентичные таблицам в рабочей БД.
    * [V002__change_schema.sql](migrations/V002__change_schema.sql) нормализует таблицы product и orders, удаляет ненужные таблицы product_info и orders_date.
    * [V003__insert_data.sql](migrations/V003__insert_data.sql) заполняет таблицы данными.
-   * [V004__create_index.sql](migrations/V004__create_index.sql) добавляет индексы, ускоряющие выполнение запросов.
+   * [V004__create_index.sql](migrations/V004__create_index.sql) добавляет индексы, значительно ускоряющие выполнение приведённого ниже запроса.
 
 ### Запрос, который показывает, какое количество сосисок было продано за каждый день предыдущей недели: 
 ```sql
