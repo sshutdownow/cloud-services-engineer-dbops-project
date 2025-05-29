@@ -1,16 +1,51 @@
 # dbops-project
-Репозиторий проекта дисциплины "DBOps". Основная цель проекта — нормализация и оптимизация схемы базы данных в рамках миграций.
- * Создание новой (тестовой) БД и пользователя:
+Репозиторий проекта дисциплины "DBOps". Основная цель проекта — пркатика по нормализации и оптимизации схемы базы данных в рамках миграций.
+### На выделеном сервере
+Создаём новую БД для тестов и пользователя:
 ```sql 
 CREATE DATABASE store;
 CREATE USER store_user WITH PASSWORD 'passw0rd';
 GRANT ALL privileges ON DATABASE store TO store_user;
 ALTER DATABASE store OWNER TO store_user;
 ```
-### Далее все изменения с БД выполняются в рамках миграций.
+### [GitHUB secrets](https://docs.github.com/ru/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions)
+Создаём и задаём значения для: DB_HOST, DB_PORT, DB_NAME, DB_USER и DB_PASSWORD.
+
+### Workflow GitHUB Actions
+Добавляем в файл _.github/workflows/main.yml_:
+```yaml
+    #### Добавьте шаг с Flyway-миграциями
+    # Устанавливаем JDK, который нужен для запуска приложений, написанных на Java (Flyway)
+    - name: Set up JDK
+      uses: actions/setup-java@v2
+      with:
+        distribution: 'temurin'
+        java-version: '11'
+
+    # Загружаем и устанавливаем Flyway, чтобы можно было использовать его для управления миграциями
+    - name: Install Flyway
+      run: |
+        curl -L -o flyway-commandline.tar.gz "https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/11.1.0/flyway-commandline-11.1.0-linux-x64.tar.gz"
+        tar -xzf flyway-commandline.tar.gz
+        sudo ln -s `pwd`/flyway-11.1.0/flyway /usr/local/bin/flyway
+
+    # Проверяем, что Postgres работает и доступен перед выполнением миграций, чтобы избежать ошибок подключения
+    - name: Wait for Postgres
+      run: until pg_isready -h ${{ secrets.DB_HOST }} -p ${{ secrets.DB_PORT }}; do sleep 1; done
+
+    # Выполняем миграции с помощью Flyway, используя URL подключения и учётные данные для базы данных
+    - name: Run Flyway migrations
+      env:
+        FLYWAY_URL: "jdbc:postgresql://${{ secrets.DB_HOST }}:${{ secrets.DB_PORT }}/${{ secrets.DB_NAME }}"
+        FLYWAY_USER: ${{ secrets.DB_USER }}
+        FLYWAY_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      run: flyway migrate -locations=filesystem:migrations
+```
+Далее все изменения ([DDL](https://ru.wikipedia.org/wiki/Data_Definition_Language)) БД выполняются в рамках миграций через механизм [GitHUB actions](https://docs.github.com/en/actions/about-github-actions/understanding-github-actions).
+
 #### Описание миграций:
-   * `V001__create_tables.sql` создаёт в тестовой БД исходные таблицы идентичные в рабочей БД.
-   * `V002__change_schema.sql` нормализует таблицы product и orders, удаляет ненужные: product_info и orders_date.
+   * `V001__create_tables.sql` создаёт в тестовой БД исходные таблицы идентичные таблицам в рабочей БД.
+   * `V002__change_schema.sql` нормализует таблицы product и orders, удаляет ненужные таблицы product_info и orders_date.
    * `V003__insert_data.sql` заполняет таблицы данными.
    * `V004__create_index.sql` добавляет индексы, ускоряющие выполнение запросов.
 
