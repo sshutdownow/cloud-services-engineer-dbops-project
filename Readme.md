@@ -44,10 +44,10 @@ ALTER DATABASE store OWNER TO store_user;
 Далее все изменения ([DDL](https://ru.wikipedia.org/wiki/Data_Definition_Language)) БД выполняются в рамках миграций через механизм [GitHUB actions](https://docs.github.com/en/actions/about-github-actions/understanding-github-actions).
 
 #### Описание миграций:
-   * `V001__create_tables.sql` создаёт в тестовой БД исходные таблицы идентичные таблицам в рабочей БД.
-   * `V002__change_schema.sql` нормализует таблицы product и orders, удаляет ненужные таблицы product_info и orders_date.
-   * `V003__insert_data.sql` заполняет таблицы данными.
-   * `V004__create_index.sql` добавляет индексы, ускоряющие выполнение запросов.
+   * [V001__create_tables.sql](migrations/V001__create_tables.sql) создаёт в тестовой БД исходные таблицы идентичные таблицам в рабочей БД.
+   * [V002__change_schema.sql](migrations/V002__change_schema.sql) нормализует таблицы product и orders, удаляет ненужные таблицы product_info и orders_date.
+   * [V003__insert_data.sql](migrations/V003__insert_data.sql) заполняет таблицы данными.
+   * [V004__create_index.sql](migrations/V004__create_index.sql) добавляет индексы, ускоряющие выполнение запросов.
 
 ### Запрос, который показывает, какое количество сосисок было продано за каждый день предыдущей недели: 
 ```sql
