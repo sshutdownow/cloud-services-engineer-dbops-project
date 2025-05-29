@@ -12,7 +12,7 @@ jobs:
 
     #### Добавьте шаг с Flyway-миграциями
     - name: Install Flyway
-    - uses: red-gate/setup-flyway@v1
+      uses: red-gate/setup-flyway@v1
     
     # Проверяем, что Postgres работает и доступен перед выполнением миграций, чтобы избежать ошибок подключения
     - name: Wait for Postgres
